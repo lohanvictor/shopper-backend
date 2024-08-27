@@ -1,0 +1,25 @@
+# Common gitignore files and folders
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.swp
+*.swo
+*.pyc
+*.class
+*.jar
+*.war
+*.ear
+*-lock.json
+target/
+build/
+dist/
+out/
+node_modules/
+.env
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
