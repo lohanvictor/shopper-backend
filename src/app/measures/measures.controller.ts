@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UploadInputDTO, UploadOutputDTO } from "./dto/upload.dto";
+import { UploadInputDTO, UploadOutputDTO } from "./dtos/upload.dto";
 import { MeasuresUtils } from "./measures.utils";
 import { MeasuresRequestErrors } from "./interfaces/measures.error";
 

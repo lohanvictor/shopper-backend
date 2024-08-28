@@ -1,4 +1,4 @@
-import { UploadInputDTO } from "./dto/upload.dto";
+import { UploadInputDTO } from "./dtos/upload.dto";
 import { MeasureType } from "./interfaces/measures.interface";
 
 export class MeasuresUtils {
