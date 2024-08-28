@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UploadInputDTO } from "./dto/upload.dto";
+import { UploadInputDTO, UploadOutputDTO } from "./dto/upload.dto";
 import { MeasuresUtils } from "./measures.utils";
 import { MeasuresRequestErrors } from "./interfaces/measures.error";
 
@@ -17,5 +17,12 @@ export class MeasuresController {
     // verificar se a leitura já foi feita no mês atual
 
     // realizar operação de upload
+
+    // retornar
+    return res.status(200).json({
+      image_url: "",
+      measure_uuid: "",
+      measure_value: 0,
+    } as UploadOutputDTO);
   }
 }
