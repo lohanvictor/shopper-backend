@@ -8,6 +8,10 @@ export class MeasuresReporitory {
     MeasuresReporitory.model.save(data);
   }
 
+  static async findById(id: string): Promise<MeasureEntity | null> {
+    return MeasuresReporitory.model.findOneBy({ id });
+  }
+
   static async findByCustomerCode(
     customer_code: string
   ): Promise<MeasureEntity[]> {
@@ -30,7 +34,7 @@ export class MeasuresReporitory {
     // });
 
     const [year, month] = datetime.split("-");
-    const measuresQuery = await MeasuresReporitory.model
+    const measuresQuery = MeasuresReporitory.model
       .createQueryBuilder("measure")
       .where("EXTRACT(YEAR FROM measure.createdAt) = :year", { year })
       .andWhere("EXTRACT(MONTH FROM measure.createdAt) = :month", { month })

@@ -1,3 +1,4 @@
+import { ConfirmInputDTO, ConfirmOutputDTO } from "./dtos/confirm.dto";
 import { UploadInputDTO, UploadOutputDTO } from "./dtos/upload.dto";
 import { MeasureType } from "./interfaces/measures.interface";
 import { MeasuresUtils } from "./measures.utils";
@@ -26,6 +27,24 @@ export class MeasuresService {
       errors.push("tipo de medida obrigatório");
     } else if (!MeasuresUtils.measureTypes.includes(input.measure_type)) {
       errors.push("tipo de medida inválido");
+    }
+
+    return errors.join(", ");
+  }
+
+  static getErrorsInConfirm(input: ConfirmInputDTO): string {
+    const errors: string[] = [];
+
+    if (input.measure_uuid === undefined) {
+      errors.push("uuid é obrigatório");
+    }
+
+    if (input.confirmed_value === undefined) {
+      errors.push("valor confirmado é obrigatório");
+    } else if (typeof input.confirmed_value !== "number") {
+      errors.push("valor confirmado deve ser um número");
+    } else if (input.confirmed_value < 0) {
+      errors.push("valor confirmado deve ser válido");
     }
 
     return errors.join(", ");
@@ -62,14 +81,39 @@ export class MeasuresService {
     measure.image = image;
     measure.customer_code = customer_code;
     measure.type = measure_type;
-    measure.updatedAt = null;
+    measure.has_confirmed = false;
+    measure.value = 0;
 
     await MeasuresReporitory.save(measure);
 
     return {
       image_url: "",
       measure_uuid: measure.id,
-      measure_value: 0,
+      measure_value: measure.value,
+    };
+  }
+
+  static async measureExists(input: ConfirmInputDTO): Promise<boolean> {
+    const { measure_uuid } = input;
+    const measure = await MeasuresReporitory.findById(measure_uuid);
+    return measure !== null;
+  }
+
+  static async measureConfirmed(input: ConfirmInputDTO): Promise<boolean> {
+    const { measure_uuid } = input;
+    const measure = await MeasuresReporitory.findById(measure_uuid);
+    return !!measure && measure.has_confirmed;
+  }
+
+  static async updateValue(input: ConfirmInputDTO): Promise<ConfirmOutputDTO> {
+    const { measure_uuid, confirmed_value } = input;
+    const measure = (await MeasuresReporitory.findById(measure_uuid))!;
+    measure.value = confirmed_value;
+
+    await MeasuresReporitory.save(measure);
+
+    return {
+      success: true,
     };
   }
 }

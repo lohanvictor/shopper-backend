@@ -14,11 +14,14 @@ export class MeasureEntity {
   image!: string;
 
   @Column()
+  value!: number;
+
+  @Column()
   customer_code!: string;
 
   @Column()
   createdAt!: Date;
 
-  @Column({ nullable: true, type: "timestamp" })
-  updatedAt!: Date | null;
+  @Column()
+  has_confirmed!: boolean;
 }

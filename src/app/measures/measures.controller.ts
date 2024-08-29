@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UploadInputDTO, UploadOutputDTO } from "./dtos/upload.dto";
 import { MeasuresRequestErrors } from "./interfaces/measures.error";
 import { MeasuresService } from "./measures.service";
+import { ConfirmInputDTO } from "./dtos/confirm.dto";
 
 export class MeasuresController {
   static async upload(req: Request<{}, {}, UploadInputDTO>, res: Response) {
@@ -30,5 +31,36 @@ export class MeasuresController {
 
     // retornar
     return res.status(200).json(result);
+  }
+
+  static async confirm(req: Request<{}, {}, ConfirmInputDTO>, res: Response) {
+    // verificar o body da requisição
+    const errors = await MeasuresService.getErrorsInConfirm(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({
+        error_code: MeasuresRequestErrors.INVALID_DATA,
+        error_description: errors,
+      });
+    }
+
+    // verificar se o id existe
+    const measureExists = await MeasuresService.measureExists(req.body);
+    if (!measureExists) {
+      return res.status(404).json({
+        error_code: MeasuresRequestErrors.MEASURE_NOT_FOUND,
+        error_description: "Leitura não encontrada",
+      });
+    }
+
+    // verificar se a leitura já foi confirmada
+    const confirmationExists = await MeasuresService.measureConfirmed(req.body);
+    if (confirmationExists) {
+      return res.status(409).json({
+        error_code: MeasuresRequestErrors.CONFIRMATION_DUPLICATE,
+        error_description: "Leitura já confirmada",
+      });
+    }
+
+    // salvar a verificação
   }
 }
