@@ -12,12 +12,15 @@ export class MeasuresReporitory {
     return MeasuresReporitory.model.findOneBy({ id });
   }
 
-  static async findByCustomerCode(
-    customer_code: string
+  static async find(
+    customer_code: string,
+    measure_type?: string
   ): Promise<MeasureEntity[]> {
     const result = MeasuresReporitory.model.find({
-      where: { customer_code },
-      order: { createdAt: "DESC" },
+      where: {
+        customer_code,
+        ...(measure_type && { type: measure_type.toUpperCase() }),
+      },
     });
 
     return result === null ? [] : result;
