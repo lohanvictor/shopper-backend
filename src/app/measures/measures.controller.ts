@@ -35,7 +35,7 @@ export class MeasuresController {
 
   static async confirm(req: Request<{}, {}, ConfirmInputDTO>, res: Response) {
     // verificar o body da requisição
-    const errors = await MeasuresService.getErrorsInConfirm(req.body);
+    const errors = MeasuresService.getErrorsInConfirm(req.body);
     if (errors.length > 0) {
       return res.status(400).json({
         error_code: MeasuresRequestErrors.INVALID_DATA,
@@ -62,5 +62,7 @@ export class MeasuresController {
     }
 
     // salvar a verificação
+    const result = await MeasuresService.updateValue(req.body);
+    res.status(200).json(result);
   }
 }

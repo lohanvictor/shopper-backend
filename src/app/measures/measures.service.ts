@@ -109,6 +109,7 @@ export class MeasuresService {
     const { measure_uuid, confirmed_value } = input;
     const measure = (await MeasuresReporitory.findById(measure_uuid))!;
     measure.value = confirmed_value;
+    measure.has_confirmed = true;
 
     await MeasuresReporitory.save(measure);
 
