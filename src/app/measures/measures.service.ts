@@ -35,7 +35,7 @@ export class MeasuresService {
   static getErrorsInConfirm(input: ConfirmInputDTO): string {
     const errors: string[] = [];
 
-    if (input.measure_uuid === undefined) {
+    if (input.measure_uuid === undefined || input.measure_uuid === "") {
       errors.push("uuid é obrigatório");
     }
 
