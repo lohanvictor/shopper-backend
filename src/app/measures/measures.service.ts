@@ -9,6 +9,11 @@ import { v4 as uuid } from "uuid";
 import { GeminiService } from "../../services/gemini/gemini.service";
 
 export class MeasuresService {
+  /**
+   * Retorna os errors identificados no body da requisição do /upload.
+   * @param input - O body do /upload contendo a imagem em Base64, o código do usuário e o tipo de medida.
+   * @returns Uma string separada em vírgula dos erros encontrados.
+   */
   static getErrorsInUpload(input: UploadInputDTO): string {
     const errors: string[] = [];
     if (input.image === undefined) {
@@ -34,6 +39,11 @@ export class MeasuresService {
     return errors.join(", ");
   }
 
+  /**
+   * Retorna os errors identificados no body da requisição do /confirm.
+   * @param input - O body do /confirm contendo o ID da medida e o valor de confirmação da medida.
+   * @returns Uma string separada em vírgula dos erros encontrados.
+   */
   static getErrorsInConfirm(input: ConfirmInputDTO): string {
     const errors: string[] = [];
 
@@ -52,6 +62,11 @@ export class MeasuresService {
     return errors.join(", ");
   }
 
+  /**
+   * Verifica se o upload já existe no banco de dados.
+   * @param input - O body da requisição /upload.
+   * @returns Um boleano indicando se o upload existe ou não.
+   */
   static async uploadAlreadyExists(input: UploadInputDTO): Promise<boolean> {
     const { customer_code, measure_type, measure_datetime } = input;
 
@@ -74,19 +89,28 @@ export class MeasuresService {
     return result;
   }
 
+  /**
+   * Salva a medida no banco de dados.
+   * 
+   * @param input - O body da requisição /upload.
+   * @returns Retorna dados da medição.
+   */
   static async save(input: UploadInputDTO): Promise<UploadOutputDTO> {
     const { image, measure_type, customer_code, measure_datetime } = input;
-
+  
+    // Utiliza a GeminiAPI para obter a medida da imagem.
     const value = await GeminiService.getMeasure(
       image,
       "image/png",
       measure_type
     );
 
+    // Salva a imagem no Gemini.
     const measureDate = new Date(measure_datetime);
     const imageName = `measure_${customer_code}_${measureDate.getFullYear()}_${measureDate.getMonth()}_${measure_type.toUpperCase()}.png`;
     const imageUrl = await GeminiService.uploadImage(imageName, image);
 
+    // Salva a medida no banco de dados.
     const measure = new MeasureEntity();
     measure.id = uuid();
     measure.createdAt = new Date(measure_datetime);
@@ -105,18 +129,35 @@ export class MeasuresService {
     };
   }
 
+  /**
+   * Verifica se a medida existe no banco de dados.
+   * @param input - Dados contendo o ID da medida.
+   * @returns Um boleano que indica se a medida existe ou não.
+   */
   static async measureExists(input: ConfirmInputDTO): Promise<boolean> {
     const { measure_uuid } = input;
     const measure = await MeasuresReporitory.findById(measure_uuid);
     return measure !== null;
   }
 
+  /**
+   * Verifica se a medida foi confirmada.
+   * 
+   * @param input - Dados contendo o ID da medida.
+   * @returns Um boleano indicando se a medida foi confirmada ou não.
+   */
   static async measureConfirmed(input: ConfirmInputDTO): Promise<boolean> {
     const { measure_uuid } = input;
     const measure = await MeasuresReporitory.findById(measure_uuid);
     return !!measure && measure.has_confirmed;
   }
 
+  /**
+   * Atualiza o valor de uma medida específica e a marca como atualizada.
+   * 
+   * @param input - O body da requisição /confirm.
+   * @returns Um dado confirmando o sucesso da atualização.
+   */
   static async updateValue(input: ConfirmInputDTO): Promise<ConfirmOutputDTO> {
     const { measure_uuid, confirmed_value } = input;
     const measure = (await MeasuresReporitory.findById(measure_uuid))!;
@@ -130,6 +171,13 @@ export class MeasuresService {
     };
   }
 
+  /**
+   * Retorna uma lista de medidas específicas de um usuário.
+   * 
+   * @param customer_code - O código do usuário.
+   * @param measure_type - Opcional. O tipo de medida a ser filtrada.
+   * @returns Retorna um objeto que contem o código do usuário e as medidas capturadas.
+   */
   static async list(
     customer_code: string,
     measure_type?: string
