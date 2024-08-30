@@ -9,7 +9,6 @@ export class MeasuresUtils {
   }
 
   static isMeasureType(measure_type: string): boolean {
-    console.log(measureTypes);
     return measureTypes.some(
       (type) => type.toLowerCase() === measure_type.toLowerCase()
     );

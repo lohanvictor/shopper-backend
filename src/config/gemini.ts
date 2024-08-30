@@ -3,8 +3,6 @@ import { GoogleAIFileManager } from "@google/generative-ai/server";
 
 const geminiAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 
-console.log(process.env.GEMINI_API_KEY);
-
 export const geminiFileManager = new GoogleAIFileManager(
   process.env.GEMINI_API_KEY ?? ""
 );
