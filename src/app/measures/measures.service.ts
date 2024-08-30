@@ -83,9 +83,9 @@ export class MeasuresService {
       measure_type
     );
 
-    // const measureDate = new Date(measure_datetime);
-    // const imageName = `measure-${customer_code}-${measureDate.getFullYear()}-${measureDate.getMonth()}-${measure_type.toUpperCase()}.png`;
-    // const imageUrl = await GeminiService.uploadImage(imageName, "./out.png");
+    const measureDate = new Date(measure_datetime);
+    const imageName = `measure-${customer_code}-${measureDate.getFullYear()}-${measureDate.getMonth()}-${measure_type.toUpperCase()}.png`;
+    const imageUrl = await GeminiService.uploadImage(imageName, image);
 
     const measure = new MeasureEntity();
     measure.id = uuid();
@@ -94,7 +94,7 @@ export class MeasuresService {
     measure.type = measure_type;
     measure.has_confirmed = false;
     measure.value = value;
-    measure.image_url = "";
+    measure.image_url = imageUrl;
 
     await MeasuresReporitory.save(measure);
 

@@ -1,3 +1,4 @@
+import { unlink, writeFile } from "fs/promises";
 import { geminiFileManager, geminiModel } from "../../config/gemini";
 
 export class GeminiService {
@@ -27,11 +28,16 @@ export class GeminiService {
     }
   }
 
-  static async uploadImage(name: string, imageUri: string): Promise<string> {
-    const uploadResult = await geminiFileManager.uploadFile(imageUri, {
+  static async uploadImage(name: string, imageBase64: string): Promise<string> {
+    const path = "./out.png";
+    await writeFile(path, imageBase64, "base64");
+
+    const uploadResult = await geminiFileManager.uploadFile(path, {
       mimeType: "image/png",
       displayName: name,
     });
+
+    await unlink(path);
 
     return uploadResult.file.uri;
   }
