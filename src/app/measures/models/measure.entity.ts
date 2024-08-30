@@ -11,7 +11,7 @@ export class MeasureEntity {
   type!: string;
 
   @Column()
-  image!: string;
+  image_url!: string;
 
   @Column()
   value!: number;

@@ -6,6 +6,7 @@ import { MeasuresUtils } from "./measures.utils";
 import { MeasureEntity } from "./models/measure.entity";
 import { MeasuresReporitory } from "./repository/measure.repository";
 import { v4 as uuid } from "uuid";
+import { GeminiService } from "../../services/gemini/gemini.service";
 
 export class MeasuresService {
   static getErrorsInUpload(input: UploadInputDTO): string {
@@ -76,19 +77,29 @@ export class MeasuresService {
   static async save(input: UploadInputDTO): Promise<UploadOutputDTO> {
     const { image, measure_type, customer_code, measure_datetime } = input;
 
+    const value = await GeminiService.getMeasure(
+      image,
+      "image/png",
+      measure_type
+    );
+
+    // const measureDate = new Date(measure_datetime);
+    // const imageName = `measure-${customer_code}-${measureDate.getFullYear()}-${measureDate.getMonth()}-${measure_type.toUpperCase()}.png`;
+    // const imageUrl = await GeminiService.uploadImage(imageName, "./out.png");
+
     const measure = new MeasureEntity();
     measure.id = uuid();
     measure.createdAt = new Date(measure_datetime);
-    measure.image = image;
     measure.customer_code = customer_code;
     measure.type = measure_type;
     measure.has_confirmed = false;
-    measure.value = 0;
+    measure.value = value;
+    measure.image_url = "";
 
     await MeasuresReporitory.save(measure);
 
     return {
-      image_url: "",
+      image_url: measure.image_url,
       measure_uuid: measure.id,
       measure_value: measure.value,
     };
@@ -128,7 +139,7 @@ export class MeasuresService {
       customer_code,
       measures: measures.map((measure) => ({
         has_confirmed: measure.has_confirmed,
-        image_url: measure.image,
+        image_url: measure.image_url,
         measure_datetime: measure.createdAt,
         measure_type: measure.type,
         measure_uuid: measure.id,
