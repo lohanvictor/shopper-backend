@@ -76,7 +76,7 @@ export class MeasuresController {
     const { customer_code } = req.params;
 
     // verificar tipo de medida
-    if (measure_type) {
+    if (measure_type !== undefined) {
       const measureTypeIsValid = MeasuresUtils.isMeasureType(measure_type);
       if (!measureTypeIsValid) {
         return res.status(400).json({
