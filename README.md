@@ -40,7 +40,7 @@ Com o Docker instalado, executar o seguinte comando:
 docker compose up -d
 ```
 
-Para acessar a aplicação, a rota é _http://localhost:8080_
+Após a execução do comando do docker, acessar a aplicação através da rota: _http://localhost:8080_.
 
 ## Descrição da API
 
