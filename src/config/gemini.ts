@@ -1,5 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleAIFileManager } from "@google/generative-ai/server";
 
-const gemini = new GoogleGenerativeAI(process.env.API_KEY ?? "");
+const geminiAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 
-export default gemini;
+console.log(process.env.GEMINI_API_KEY);
+
+export const geminiFileManager = new GoogleAIFileManager(
+  process.env.GEMINI_API_KEY ?? ""
+);
+
+export const geminiModel = geminiAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+});
