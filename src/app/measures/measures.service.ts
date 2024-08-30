@@ -84,7 +84,7 @@ export class MeasuresService {
     );
 
     const measureDate = new Date(measure_datetime);
-    const imageName = `measure-${customer_code}-${measureDate.getFullYear()}-${measureDate.getMonth()}-${measure_type.toUpperCase()}.png`;
+    const imageName = `measure_${customer_code}_${measureDate.getFullYear()}_${measureDate.getMonth()}_${measure_type.toUpperCase()}.png`;
     const imageUrl = await GeminiService.uploadImage(imageName, image);
 
     const measure = new MeasureEntity();
